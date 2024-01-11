@@ -1,67 +1,42 @@
-import express from 'express'
-
+import { createSchema, createYoga } from 'graphql-yoga';
+import { createServer } from 'http';
 import { PrismaClient } from '@prisma/client'
 
-const app = express()
+import {typeDefs} from "./schema/type-defs"
 
-const server = new PrismaClient();
+import queries from './schema/resolvers/queries';
+import mutations from './schema/resolvers/mutations';
+import type { Resolvers } from './schema/generated/graphql';
+import env from "./utils/env-parser"
 
-app.use(express.json());
-app.post("/users", async (req,res)=>{
-   const user= await server.user.create({
-        data: {
-            name:"geetha",
-            gender:"Female",
-            address:"kandy"
-        }
-    })
-    return res.json(user).send()
-})
 
-app.get ("/users",async (req,res)=>{
-    try{
-        const users = await server.user.findMany()
-        return res.json(users)
-    } catch(error){
-        console.log(error)
-        return res.status(500).json({error})
-    }
-})
 
-app.put("/users/:id", async (req,res) =>{
-    try{
-        const {id} = req.params;
-        const {name, gender, address} = req.body;
-        const updateUser = await server.user.update({
-            where:{
-                id:parseInt(id),
-            },
-            data:{
-                name:"kamala",
-                gender,
-                address,
-            },
-        })
-        return res.json(updateUser);
-    } catch(error){
-        console.error(error)
-        return res.status(500).json ({error})
-    }
-})
+const prisma = new PrismaClient();
 
-app.delete("/users/:id", async (req,res)=>{
-    try{
-        const {id} = req.params
-        await server.user.delete({
-            where:{
-                id: parseInt(id)
+const resolvers :Resolvers={
+    Query: queries,
+    Mutation: mutations,
+    User:{
+        async posts(user, _args, ctx){
+            try {
+                const postInformation = await ctx.prisma.post.findMany({
+                    where:{
+                        authorId:user.id,
+                    }
+                })
+                return postInformation
+
+            } catch (error){
+                throw new Error("something went wrong")
             }
-        })
-        return res.json({message:"user deleted "});
-    } catch(error){
-        console.error(error)
+        }
     }
-})
+}
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`listening on port ${port}..`))
+const schema = createSchema({typeDefs, resolvers})
+const yoga = createYoga({ schema, context:{prisma}})
+const server = createServer(yoga)
+ 
+server.listen(env.PORT,()=>{
+    console.log(`server is running  on http://localhost:${env.PORT}`)
+})

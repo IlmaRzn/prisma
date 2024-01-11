@@ -1,0 +1,43 @@
+enum Gender {
+  Male
+  Female
+}
+
+input UserWhereUniqueInput {
+  id: Int!
+}
+
+input UserCreateInput {
+  name: String!
+  
+  address: String!
+  isActive: Boolean
+  gender: Gender!
+}
+
+type User {
+  id: Int!
+  name: String!
+  address: String!
+  isActive: Boolean!
+  gender: Gender!
+  createAt: String!
+  posts: [Post!]!
+}
+
+type Post {
+  id: Int!
+  title: String!
+  description: String
+  author: User!
+}
+
+type Query {
+  user(where: UserWhereUniqueInput!): User
+  users: [User!]!
+  posts: [Post!]!
+}
+
+type Mutation {
+  createUser(data: UserCreateInput!): User!
+}
