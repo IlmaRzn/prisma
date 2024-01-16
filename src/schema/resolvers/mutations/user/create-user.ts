@@ -15,7 +15,7 @@ const createUser: MutationResolvers["createUser"] = async(
         return userInformation;
     } catch (error){
         console.log(error)
-        throw createGraphQLError("somethong went wrong")
+        throw createGraphQLError("something went wrong")
     }
 }
 
