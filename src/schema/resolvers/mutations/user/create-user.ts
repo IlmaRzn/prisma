@@ -10,6 +10,7 @@ const createUser: MutationResolvers["createUser"] = async(
     ctx,
 ) =>{
     try{
+      
         const data = userCreateSchema.parse(args.data)
         const userInformation = await ctx.prisma.user.create({data})
         return userInformation;

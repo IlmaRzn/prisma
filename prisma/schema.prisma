@@ -11,20 +11,22 @@ datasource db {
 }
 
 model User {
-  id       Int  @id @default(autoincrement())
+  id      String @id 
   name     String
   address  String
   isActive Boolean @default(true)
   gender   Gender
+  email    String @unique
   createAt DateTime @default(now())
   posts    Post[]
+ 
 }
 
 model Post {
-  id          Int  @id @default(autoincrement())
+  id          String  @id 
   title       String
   description String?
-  authorId    Int
+  authorId   String
   author      User    @relation(references: [id], fields: [authorId])
 }
 

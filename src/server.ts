@@ -51,7 +51,17 @@ async function getCurrentUser(context:YogaInitialContext){
     if(!token) return null
 
     const decodedToken = await firebase.verifyToken(token)
-  
+  const currentUser = await prisma.user.findUnique({
+    where:{
+        id:decodedToken.uid,
+    },
+    select:{
+        email:true,
+        isActive:true,
+        id:true
+    }
+  })
+  return currentUser
 }
 
 const server = createServer(yoga)
@@ -59,3 +69,5 @@ const server = createServer(yoga)
 server.listen(env.PORT,()=>{
     console.log(`server is running  on http://localhost:${env.PORT}`)
 })
+
+export type User = Awaited <ReturnType<typeof getCurrentUser>>

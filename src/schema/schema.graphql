@@ -4,21 +4,22 @@ enum Gender {
 }
 
 input UserWhereUniqueInput {
-  id: Int!
+  id: String!
 }
 
 input UserCreateInput {
   name: String!
-  
+  email: String!
   address: String!
   isActive: Boolean
   gender: Gender!
 }
 
 type User {
-  id: Int!
+  id: String!
   name: String!
   address: String!
+  email: String!
   isActive: Boolean!
   gender: Gender!
   createAt: String!
@@ -26,7 +27,7 @@ type User {
 }
 
 type Post {
-  id: Int!
+  id: String!
   title: String!
   description: String
   author: User!
